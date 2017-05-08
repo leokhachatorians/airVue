@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>AirVue</title>
+    <link rel="stylesheet" type="text/css" href="./static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/animate.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/main.css">
+  </head>
+  <body>
+
+    <div id="wrapper">
+      <div id="page-wrapper" class="gray-bg">
+        <div class="row row-border-bottom">
+          <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <ul class="nav navbar-top-links navbar-left" style="margin-left: 20px;">
+              <li>
+                <router-link :to="{name: 'index'}" class="navbar-brand">Table List</router-link>
+                <a class="navbar-brand" href="/">Table List</a>
+              </li>
+            </ul>
+            <ul class="nav navbar-top-links navbar-right">
+              <li>
+                <a href="#">
+                  <i class="fa fa-sign-out">Logout</i>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="row">
+          <div class="wrapper wrapper-content animated fadeInRight">
+            <div id="current-view">
+              <div id="app"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <script type="text/javascript" src="./static/js/jquery.min.js"></script>
+  <script type="text/javascript" src="./static/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="./static/js/axios.min.js"></script>
+
+  </body>
+</html>
