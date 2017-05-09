@@ -67,7 +67,9 @@
                 <td class="form-inline">
                   <button v-on:click="delete_sheet(sheet.id)"
                     class="btn btn-xs btn-danger basic" type="button">Delete</button>
-                  <button class="btn btn-xs btn-success basic" type="button">Edit Table</button>
+                  <router-link :to="{name: 'modify', params: {id: sheet.id}}">
+                    <button class="btn btn-xs btn-success basic" type="button">Edit Table</button>
+                  </router-link>
                   <input type="hidden" v-bind:value="sheet.id" id="table_id">
                 </td>
               </tr>

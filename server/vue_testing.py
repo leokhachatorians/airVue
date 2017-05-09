@@ -31,13 +31,13 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
-import forms, models, helpers
+import models, helpers
 
 schema_store = DTSchemaStoreSQL(session, engine)
 data_engine = DTDataEngineSQL(session, engine, metadata)
 
 @app.route('/get_sheet', methods=['POST'])
-def get_sheet_data():
+def get_sheet():
     id_ = request.json['id']
     sheet = session.query(models.Sheets).filter_by(id=id_).first()
     dtable = schema_store.get_schema(sheet.sheet_name, sheet.id)
@@ -49,6 +49,46 @@ def get_sheet_data():
             'id': sheet.id
     }
     return jsonify(contents)
+
+@app.route('/get_modify_sheet', methods=['POST'])
+def get_modify_sheet():
+    id_ = request.json['id']
+    sheet = session.query(models.Sheets).filter_by(id=id_).first()
+    dtable = schema_store.get_schema(sheet.sheet_name, sheet.id)
+    contents = {}
+    contents['sheet'] = {
+            'name': sheet.sheet_name,
+            'id': sheet.id}
+    contents['schema'] = []
+    for i, column in enumerate(dtable.columns):
+        contents['schema'].append(
+                {'name': column.column_name,
+                'type': column.column_type,
+                'id': column.column_id,
+                'num': i + 1})
+    return jsonify(contents)
+
+@app.route('/delete_column', methods=['POST'])
+def delete_column():
+    sheet_id = request.json['sheet_id']
+    column_name = request.json['column_name']
+    column_id = request.json['column_id']
+    dtable = schema_store.get_schema('', sheet_id)
+    dtable.remove_column(column_name, column_id)
+    schema_store.set_schema(dtable)
+    data_engine.set_schema(dtable)
+    return jsonify(status=200)
+
+@app.route('/add_column', methods=['POST'])
+def add_column():
+    sheet_id = request.json['sheet_id']
+    column_name = request.json['column_name']
+    column_type = request.json['column_type']
+    dtable = schema_store.get_schema('', sheet_id)
+    dtable.add_column(column_name, column_type)
+    schema_store.set_schema(dtable)
+    data_engine.set_schema(dtable)
+    return jsonify(status=200)
 
 @app.route('/add_data', methods=['POST'])
 def add_data():

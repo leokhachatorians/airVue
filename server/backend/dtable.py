@@ -17,9 +17,7 @@ class DTable():
         self.columns = columns
         self._set_table_info()
 
-    def add_column(self, form):
-        name = form.add_column_name.data
-        type_ = form.types.data
+    def add_column(self, name, type_):
         try:
             self.info['columns'][name]
             return False
@@ -42,10 +40,10 @@ class DTable():
         except KeyError:
             return False
 
-    def remove_column(self, form):
+    def remove_column(self, name, id_):
         try:
-            self.info['columns'][form.delete_column_name.data]
-            self.info['modifications']['id'] = form.delete_column_id.data
+            self.info['columns'][name]
+            self.info['modifications']['id'] = id_
             self.info['action'] = 'remove'
             return True
         except KeyError:

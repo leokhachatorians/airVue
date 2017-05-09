@@ -13,7 +13,7 @@ class DTSchemaStore(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_schema(self, dtable, schema=None, sheet=None):
+    def set_schema(self, dtable, sheet=None):
         pass
 
 class DTSchemaStoreJSON(DTSchemaStore):
@@ -37,22 +37,23 @@ class DTSchemaStoreSQL(DTSchemaStore):
             dt_columns.append(DTColumn(col.id, col.column_name, col.column_type))
         return DTable(table_name, table_id, dt_columns)
 
-    def set_schema(self, dtable, schema=None, sheet=None):
+    def set_schema(self, dtable, sheet=None):
         if dtable.info['action'] == 'add':
             self._add_column(dtable, sheet)
         elif dtable.info['action'] == 'alter':
             self._alter_column(dtable, sheet)
         elif dtable.info['action'] == 'remove':
-            self._remove_column(dtable, schema)
+            self._remove_column(dtable)
         elif dtable.info['action'] == 'generate':
             self._generate_table(dtable)
         elif dtable.info['action'] == 'drop':
             self._drop_table(dtable)
-        elif dtable.info['action'] == 'change_tablename':
+        elif dtable.info['action'] == 'nge_tablename':
             self._change_tablename(dtable)
-
-    def _add_column(self, dtable, sheet):
+    def _add_column(self, dtable):
         sequence_number = len(dtable.columns)
+
+        sheet = self.session.query(models.Sheets).filter_by(sheet_id=dtable.id_).first()
 
         new_col = models.Sheets_Schema(
                 sheet, dtable.info['modifications']['name'],
@@ -64,7 +65,7 @@ class DTSchemaStoreSQL(DTSchemaStore):
         current_session.commit()
         dtable.info['modifications']['id'] = new_col.id
 
-    def _remove_column(self, dtable, schema):
+    def _remove_column(self, dtable):
         col_to_delete_id = dtable.info['modifications']['id']
         col_to_delete = self.session.query(models.Sheets_Schema).filter_by(id=col_to_delete_id).one()
 

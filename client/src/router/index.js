@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
 import sheet from '@/components/sheet'
 import index from '@/components/index'
+import modify from '@/components/modify'
 
 Vue.use(Router)
 
@@ -17,6 +17,11 @@ export default new Router({
 			path: '/sheet/:id',
 			name: 'sheet',
 			component: sheet,
+		},
+		{
+			path: '/sheet/modify/:id',
+			name: 'modify',
+			component: modify,
 		},
   ]
 })

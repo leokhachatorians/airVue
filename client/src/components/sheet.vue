@@ -53,78 +53,78 @@ export default {
       sheet_id: '',
     }
   },
-	methods: {
-		populate_table: function() {
-			var self = this;
+  methods: {
+    populate_table: function() {
+      var self = this;
       let id = parseInt(this.$route.params.id);
       var d = {'id': id};
-			axios.post('http://localhost:5000/get_sheet', d)
-				.then(response => {
-							self.my_list = response.data['rows'];
-							self.columns = response.data['columns'];
-							self.inputs = response.data['columns'].slice(0);
-							self.inputs.pop();
-							self.sheet_name = response.data['sheet_info']['name'];
-							self.sheet_id = response.data['sheet_info']['id'];
-				})
+      axios.post('http://localhost:5000/get_sheet', d)
+        .then(response => {
+              self.my_list = response.data['rows'];
+              self.columns = response.data['columns'];
+              self.inputs = response.data['columns'].slice(0);
+              self.inputs.pop();
+              self.sheet_name = response.data['sheet_info']['name'];
+              self.sheet_id = response.data['sheet_info']['id'];
+        })
         .catch(function (err) {
           console.log(err.message);
         });
-		},
-		add_data: function() {
-			var self = this;
-			var add_records = document.getElementsByName('add_records');
-			var data = {}
+    },
+    add_data: function() {
+      var self = this;
+      var add_records = document.getElementsByName('add_records');
+      var data = {}
 
-			data['values'] = []
-			for (var i = 0; i < add_records.length; i++) {
-				data['values'].push(add_records[i]['value'])
-			}
-			data['sheet_id'] = document.getElementById('sheet_id').value;
-			axios.post('http://localhost:5000/add_data', data)
-				.then(function (res) {
-					self.populate_table();
-				})
-				.catch(function (err) {
-					console.log(err.message);
-				});
-		},
-		delete_data: function(e) {
-			var self = this;
-			var form = e.target.form;
-			var data = {}
-			data['sheet_id'] = document.getElementById('sheet_id').value;
-			data['row_id'] = form.elements.namedItem('row_id').value;
-			axios.post('http://localhost:5000/delete_data', data)
-				.then(function (res) {
-					self.populate_table();
-				})
-				.catch(function (err) {
-					console.log(err.message);
-				});
-		},
-		edit_data: function(e) {
-			var self = this;
-			var form = e.target.form;
-			var data = {}
-			data['sheet_id'] = document.getElementById('sheet_id').value;
-			data['row_id'] = form.elements.namedItem('row_id').value;
-			data['values'] = []
-			var input_nodes = document.getElementsByName(data['row_id']);
-			for (var i = 0; i < input_nodes.length; i++) {
-				data['values'].push(input_nodes[i].value);
-			}
-			axios.post('http://localhost:5000/modify_data', data)
-				.then(function (res) {
-					self.populate_table()
-				})
-			.catch(function (err) {
-				console.log(err.message);
-			});
-		},
-	},
-	beforeMount() {
-		this.populate_table()
-	},
+      data['values'] = []
+      for (var i = 0; i < add_records.length; i++) {
+        data['values'].push(add_records[i]['value'])
+      }
+      data['sheet_id'] = document.getElementById('sheet_id').value;
+      axios.post('http://localhost:5000/add_data', data)
+      .then(function (res) {
+          self.populate_table();
+        })
+        .catch(function (err) {
+          console.log(err.message);
+      });
+    },
+    delete_data: function(e) {
+      var self = this;
+      var form = e.target.form;
+      var data = {}
+      data['sheet_id'] = document.getElementById('sheet_id').value;
+      data['row_id'] = form.elements.namedItem('row_id').value;
+      axios.post('http://localhost:5000/delete_data', data)
+        .then(function (res) {
+          self.populate_table();
+        })
+        .catch(function (err) {
+          console.log(err.message);
+        });
+    },
+    edit_data: function(e) {
+      var self = this;
+      var form = e.target.form;
+      var data = {}
+      data['sheet_id'] = document.getElementById('sheet_id').value;
+      data['row_id'] = form.elements.namedItem('row_id').value;
+      data['values'] = []
+      var input_nodes = document.getElementsByName(data['row_id']);
+      for (var i = 0; i < input_nodes.length; i++) {
+        data['values'].push(input_nodes[i].value);
+      }
+      axios.post('http://localhost:5000/modify_data', data)
+        .then(function (res) {
+          self.populate_table()
+        })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+    },
+  },
+  beforeMount() {
+    this.populate_table()
+  },
 }
 </script>
