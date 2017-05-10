@@ -29,12 +29,12 @@ class DTable():
             self.info['action'] = 'add'
             return True
 
-    def alter_column(self, form):
+    def alter_column(self, old_name, new_name, new_type, col_id):
         try:
-            self.info['columns'][form.old_column_name.data]
-            self.info['modifications']['name'] = form.edit_column_name.data
-            self.info['modifications']['type'] = form.types.data
-            self.info['modifications']['id'] = form.column_id.data
+            self.info['columns'][old_name]
+            self.info['modifications']['name'] = new_name
+            self.info['modifications']['type'] = new_type
+            self.info['modifications']['id'] = col_id
             self.info['action'] = 'alter'
             return True
         except KeyError:
@@ -49,9 +49,9 @@ class DTable():
         except KeyError:
             return False
 
-    def change_tablename(self, form):
-        self.info['modifications']['name'] = form.edit_sheet_name.data
-        self.info['action'] = 'change_tablename'
+    def change_table_name(self, name):
+        self.info['modifications']['name'] = name
+        self.info['action'] = 'change table name'
         return True
 
     def _set_table_info(self):

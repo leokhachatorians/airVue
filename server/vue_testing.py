@@ -50,15 +50,22 @@ def get_sheet():
     }
     return jsonify(contents)
 
+@app.route('/edit_sheet_name', methods=['POST'])
+def edit_sheet_name():
+    sheet_id = request.json['sheet_id']
+    new_table_name = request.json['new_sheet_name']
+    dtable = schema_store.get_schema('', sheet_id)
+    dtable.change_table_name(new_table_name)
+    schema_store.set_schema(dtable)
+    return jsonify(status=200)
+
 @app.route('/get_modify_sheet', methods=['POST'])
 def get_modify_sheet():
     id_ = request.json['id']
     sheet = session.query(models.Sheets).filter_by(id=id_).first()
     dtable = schema_store.get_schema(sheet.sheet_name, sheet.id)
     contents = {}
-    contents['sheet'] = {
-            'name': sheet.sheet_name,
-            'id': sheet.id}
+    contents['sheet_name'] = sheet.sheet_name
     contents['schema'] = []
     for i, column in enumerate(dtable.columns):
         contents['schema'].append(
@@ -77,6 +84,18 @@ def delete_column():
     dtable.remove_column(column_name, column_id)
     schema_store.set_schema(dtable)
     data_engine.set_schema(dtable)
+    return jsonify(status=200)
+
+@app.route('/alter_column', methods=['POST'])
+def alter_column():
+    sheet_id = request.json['sheet_id']
+    new_name = request.json['new_name']
+    old_name = request.json['old_name']
+    new_type = request.json['new_type']
+    col_id = request.json['col_id']
+    dtable = schema_store.get_schema('', sheet_id)
+    dtable.alter_column(old_name, new_name, new_type, col_id)
+    schema_store.set_schema(dtable)
     return jsonify(status=200)
 
 @app.route('/add_column', methods=['POST'])
@@ -163,22 +182,6 @@ def get_sheets():
         }
         contents['sheets'].append(d)
     return jsonify(contents)
-
-@app.route('/view_sheet/<sheet_name>')
-def view_sheet(sheet_name):
-    return render_template('view_sheet_vue.html')
-
-@app.route('/')
-def index():
-    sheets = session.query(models.Sheets).filter_by(user_id=1).all()
-    new_sheet_form = forms.NewSheetForm(request.form)
-    delete_form = forms.DeleteTableForm(request.form)
-    return render_template("index_vue.html", sheets=sheets,
-            new_sheet_form=new_sheet_form, delete_form=delete_form)
-
-@app.route('/example')
-def example():
-    return render_template('example.html')
 
 if __name__ == "__main__":
     app.run(debug=True, threaded=True)

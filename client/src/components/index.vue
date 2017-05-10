@@ -15,8 +15,8 @@
       </div>
       <!-- End Top Section -->
 
-      <!-- Create Table Well -->
-      <div v-show="display_well" id="create_table_well" class="ibox-content col-lg-12">
+    <!-- Create Table Well -->
+      <div v-show="display_well" class="ibox-content col-lg-12">
         <div class="well col-lg-3">
           <form role="form" method="POST" class="form-inline">
               <table class="table">
@@ -43,16 +43,15 @@
             </form>
         </div>
       </div>
-      <!-- End Create Table Well -->
+    <!-- End Create Table Well -->
 
-      <!-- Contents -->
+    <!-- Contents -->
       <div class="ibox-content">
         <div class="table-responsive">
           <div role="status" aria-live="polite" style="padding-bottom: 8px;">
             Showing 1 to 14 of 14 entries
           </div>
-
-          <!-- View Table List Section -->
+        <!-- View Table List Section -->
           <table class="table table-striped table-bordered table-hover dataTables-Example">
             <thead>
               <tr>
@@ -75,10 +74,10 @@
               </tr>
             </tbody>
           </table>
-          <!-- End View Table List Section -->
+        <!-- End View Table List Section -->
         </div>
       </div>
-      <!-- End Contents -->
+    <!-- End Contents -->
     </div>
   </div>
 </template>

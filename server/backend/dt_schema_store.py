@@ -13,7 +13,7 @@ class DTSchemaStore(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_schema(self, dtable, sheet=None):
+    def set_schema(self, dtable):
         pass
 
 class DTSchemaStoreJSON(DTSchemaStore):
@@ -39,21 +39,21 @@ class DTSchemaStoreSQL(DTSchemaStore):
 
     def set_schema(self, dtable, sheet=None):
         if dtable.info['action'] == 'add':
-            self._add_column(dtable, sheet)
+            self._add_column(dtable)
         elif dtable.info['action'] == 'alter':
-            self._alter_column(dtable, sheet)
+            self._alter_column(dtable)
         elif dtable.info['action'] == 'remove':
             self._remove_column(dtable)
         elif dtable.info['action'] == 'generate':
             self._generate_table(dtable)
         elif dtable.info['action'] == 'drop':
             self._drop_table(dtable)
-        elif dtable.info['action'] == 'nge_tablename':
-            self._change_tablename(dtable)
+        elif dtable.info['action'] == 'change table name':
+            self._change_table_name(dtable)
+
     def _add_column(self, dtable):
         sequence_number = len(dtable.columns)
-
-        sheet = self.session.query(models.Sheets).filter_by(sheet_id=dtable.id_).first()
+        sheet = self.session.query(models.Sheets).filter_by(id=dtable.id_).first()
 
         new_col = models.Sheets_Schema(
                 sheet, dtable.info['modifications']['name'],
@@ -76,7 +76,7 @@ class DTSchemaStoreSQL(DTSchemaStore):
         col_to_delete = self.session.query(models.Sheets_Schema).filter_by(id=col_to_delete_id).delete()
         self.session.commit()
 
-    def _alter_column(self, dtable, sheet):
+    def _alter_column(self, dtable):
         col_to_alter_id = dtable.info['modifications']['id']
         col = self.session.query(models.Sheets_Schema).filter_by(id=col_to_alter_id).one()
         col.column_name = dtable.info['modifications']['name']
@@ -94,7 +94,7 @@ class DTSchemaStoreSQL(DTSchemaStore):
         self.session.query(models.Sheets).filter_by(id=dtable.id_).delete()
         self.session.commit()
 
-    def _change_tablename(self, dtable):
+    def _change_table_name(self, dtable):
         sheet = self.session.query(models.Sheets).filter_by(id=dtable.id_).one()
         sheet.sheet_name = dtable.info['modifications']['name']
         self.session.commit()

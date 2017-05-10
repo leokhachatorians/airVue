@@ -1,16 +1,11 @@
 <template>
-
-
   <div class="col-lg-12">
-
     <div class="ibox float-e-margins">
-      <h1>Table: {{ sheet.name }}</h1> 
+      <h1>Table: {{ sheet_name }}</h1> 
       <h3><button type="button" class="btn btn-xs btn-primary" style="margin-bottom: 0;"
               data-toggle="modal" data-target="#change_table_name_modal">Change Table Name</button>
       </h3>
     </div>
-
-
     <div class="ibox float-e-margins">
       <div class="ibox-title">
         <h5>Column List</h5>
@@ -29,86 +24,108 @@
 
     <!-- Add Column Button -->
       <div class="ibox-content">
-        <form role="form" class="form-inline">
-          <button id="new_column_button" type="button" class="btn btn-w-m btn-success" style="margin-bottom: 0;">Add Column</button>
-        </form>
+        <div class="form-inline">
+          <button v-on:click="toggle_add" type="button" class="btn btn-w-m btn-success">
+            Add Column
+          </button>
+        </div>
       </div>
     <!-- End Add Column Button -->
 
     <!-- Add Column Well -->
-      <form method="POST">
-        <div id="new_column_well" class="ibox-content col-lg-12" style="display: none;">
-          <div class="well col-lg-3">
-            <form role="form" class="form-inline">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th colspan="3" style="text-align: center;"><h3>Add Column</h3></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Name</label></td>
-                    <td>add_form.add_column_name</td>
-                  </tr>
-                  <tr>
-                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
-                    <td>add_form.types</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td class="form-inline">
-                      add_form.submit_add_column
-                      <button id="cancel_new_column_button" type="button" class="btn btn-s btn-default" style="margin-bottom: 0; margin-left: 10px">Cancel</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </form>
-          </div>
+      <div v-show="add_well" class="ibox-content col-lg-12">
+        <div class="well col-lg-3">
+          <form role="form" class="form-inline">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th colspan="3" style="text-align: center;"><h3>Add Column</h3></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Name</label></td>
+                  <td><input type="text" id="add_name" class="form-control"></td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
+                  <td>
+                    <select id="options_add" class="form-control">
+                      <option v-for="type in types" v-bind:value="type[0]">
+                        {{ type[1] }}
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td class="form-inline">
+                    <button v-on:click="add_column"
+                      type="button" class="btn btn-s btn-primary">
+                      Create
+                    </button>
+                    <button v-on:click="toggle_add"
+                      type="button" class="btn btn-s btn-default">
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
         </div>
-      </form>
+      </div>
     <!-- End of Add Column Well-->
 
     <!-- Edit Column Well -->
-      <form method="POST">
-        <div id="edit_column_well" class="ibox-content col-lg-12" style="display: none;">
-          <div class="well col-lg-6">
-            <form role="form" class="form-inline">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th colspan="3" style="text-align: center;"><h3 id="edit_column_header">Edit Column</h3></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style-"vertical-align: middle;"><label class="col-lg-2 control-label">Current Column Name</label></td>
-                    <td><input type="text" id="edit_column_old_name" class="form-control" value="placeholder" disabled></td>
-                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">New Column Name</label></td>
-                    <td>edit_form.edit_column_name</td>
-                    edit_form.old_column_name
-                  </tr>
-                  <tr>
-                    <td style="vertical-align: middle;"><label class="col-lg-3 control-label">Old Type</label></td>
-                    <td><input type="text" id="edit_column_old_type" class="form-control" value="placeholder" disabled></td>
-                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
-                    <td>edit_form.types</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td class="form-inline">
-                        edit_form.column_id
-                        edit_form.submit_edit_column
-                        <button id="cancel_edit_column_button" type="button" class="btn btn-s btn-default" style="margin-bottom: 0; margin-left: 10px">Cancel</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </form>
-          </div>
+      <div v-show="edit_well" id="edit_column_well" class="ibox-content col-lg-12">
+        <div class="well col-lg-6">
+          <form role="form" class="form-inline">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th colspan="3" style="text-align: center;"><h3 id="edit_column_header">Edit Column</h3></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Current Column Name</label></td>
+                  <td><input type="text" id="old_name" class="form-control" disabled></td>
+                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">New Column Name</label></td>
+                  <td><input type="text" id="new_name" class="form-control"></td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: middle;"><label class="col-lg-3 control-label">Old Type</label></td>
+                  <td><input type="text" id="old_type" class="form-control" disabled></td>
+                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
+                  <td>
+                    <select id="options_edit" class="form-control">
+                      <option v-for="type in types" v-bind:value="type[0]">
+                        {{ type[1] }}
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td class="form-inline">
+                      <button v-on:click="edit_column"
+                        type="button" class="btn btn-s btn-primary">
+                        Alter
+                      </button>
+                      <input type="hidden" id="edit_col_id" value="">
+                      <button v-on:click="toggle_edit" 
+                        id="cancel_edit_column_button" type="button"
+                        class="btn btn-s btn-default">
+                        Cancel
+                      </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
         </div>
-      </form>
+      </div>
     <!-- End Edit Column Well -->
 
     <!-- Table of Column Info -->
@@ -130,20 +147,17 @@
                   <td>{{ column.name }}</td>
                   <td>{{ column.type }}</td>
                   <td>
-                    <form method="POST">
-                      <button id="edit_column_button_loop.index0" value="i.column_name" 
-                        type="button" class="btn btn-xs btn-success basic">
-                        Edit</button>
-                      <button v-on:click="delete_column(column.name, column.id, sheet.id)"
-                        type="button" class="btn btn-xs btn-danger basic">
-                        Delete
-                      </button>
-                      delete_form.delete_column_name(value=i.column_name)
-                      delete_form.delete_column_id(value=i.column_id)
-                      delete_form.submit_delete
-                      <input type="hidden" id="clicked_column_name_i.column_name" name="to_delete" value="i.column_id">
-                      <input type="hidden" id="clicked_column_type_loop.index0"  value="i.column_type">
-                    </form>
+                    <button
+                    v-on:click="toggle_edit(column.name, column.id, column.type)"
+                      id="edit_column_btn"
+                      type="button" class="btn btn-xs btn-success basic">
+                      Edit</button>
+                    <button v-on:click="delete_column(column.name, column.id)"
+                      type="button" class="btn btn-xs btn-danger basic">
+                      Delete
+                    </button>
+                    <input type="hidden" id="clicked_column_name_i.column_name" name="to_delete" value="i.column_id">
+                    <input type="hidden" id="clicked_column_type_loop.index0"  value="i.column_type">
                   </td>
                 </tr>
               </tbody>
@@ -164,13 +178,19 @@
           <div class="modal-body">  
             <form method="POST">
               <label class="col-lg-2 control-label">Current Tablename</label>
-              <input type="text" id="edit_column_old_name" class="form-control" value="sheet.sheet_name" disabled>
+              <input type="text"  class="form-control" v-bind:value="sheet_name" disabled>
               </br>
               <label class="col-lg-2 control-label">New Tablename</label>
-              edit_sheet_form.edit_sheet_name
+              <input type="text" id="new_sheet_name" class="form-control">
               <div class="modal-footer">
-                edit_sheet_form.submit_edit_sheet
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button v-on:click="edit_sheet_name" type="button"
+                  class="btn btn-primary" data-dismiss="modal">
+                  Save
+                </button>
+                <button type="button" 
+                  class="btn btn-default" data-dismiss="modal">
+                  Close
+                </button>
               </div>
             </form>
           </div>
@@ -186,34 +206,116 @@ export default {
   name: 'modify',
   data () {
     return {
-      sheet: "",
+      sheet_name: "",
+      sheet_id: 0,
       schema: [],
+      add_well: false,
+      edit_well: false,
+      types: [
+        ['String', 'Text'], ['Text', 'Long Text'],
+        ['Text', 'Select'], ['Boolean', 'Check Box'],
+        ['Date', 'Date'], ['Text', 'Record'],
+        ['Float', 'Currency'], ['Float', 'Number'],
+        ['DateTime', 'Timestamp'], ['BigInteger', 'Integer'],
+        ['String', 'Time']
+      ]
     }
   },
   methods: {
     populate: function() {
       var self = this;
-      let id = parseInt(this.$route.params.id);
-      var d = {'id': id};
-      axios.post('http://localhost:5000/get_modify_sheet', d)
+      this.sheet_id = parseInt(this.$route.params.id);
+      var data = {'id': this.sheet_id};
+      axios.post('http://localhost:5000/get_modify_sheet', data)
       .then(response => {
-        self.sheet = response.data['sheet'];
+        self.sheet_name = response.data['sheet_name'];
         self.schema = response.data['schema'];
-        console.log(self.schema);
-        console.log(self.sheet.name, self.sheet.id);
       })
       .catch(function (err) {
         console.log(err.message);
       })
     },
-    delete_column: function(column_name, column_id, sheet_id) {
+    delete_column: function(column_name, column_id) {
       var self = this;
       var data = {
         'column_name': column_name,
         'column_id': column_id,
-        'sheet_id': sheet_id};
+        'sheet_id': this.sheet_id,
+      };
       axios.post('http://localhost:5000/delete_column', data)
       .then(response => {
+        self.populate();
+      })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+    },
+    toggle_edit: function(column_name=false, column_id=false, column_type=false) {
+      if (column_id != false) { 
+        document.getElementById('old_name').value = column_name;
+        document.getElementById('old_type').value = column_type;
+        document.getElementById('edit_col_id').value = column_id;
+        this.edit_well = true;
+      }
+      else {
+        this.edit_well = !this.edit_well;
+      }
+    },
+    toggle_add: function() {
+      document.getElementById('add_name').value = "";
+      this.add_well = !this.add_well;
+    },
+    edit_column: function() {
+      var e = document.getElementById('options_edit');
+      var new_name = document.getElementById('new_name').value;
+      var old_name = document.getElementById('old_name').value;
+      var new_type = e.options[e.selectedIndex].value;
+      var col_id = document.getElementById('edit_col_id').value;
+      var data = {
+        'sheet_id': this.sheet_id,
+        'old_name': old_name,
+        'new_name': new_name,
+        'new_type': new_type,
+        'col_id': col_id,
+      };
+      var self = this;
+      axios.post('http://localhost:5000/alter_column', data)
+      .then(function (res) {
+        self.toggle_edit();
+        self.populate();
+      })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+    },
+    add_column: function() {
+      var e = document.getElementById('options_add');
+      var col_type = e.options[e.selectedIndex].value;
+      var col_name = document.getElementById('add_name').value;
+      var data = {
+        'sheet_id': this.sheet_id,
+        'column_name': col_name,
+        'column_type': col_type
+      };
+      var self = this;
+      axios.post('http://localhost:5000/add_column', data)
+      .then(function (res) {
+        self.toggle_add();
+        self.populate();
+      })
+      .catch(function (err) {
+        console.log(err.message);
+      });
+    },
+    edit_sheet_name: function() {
+      var new_sheet_name = document.getElementById('new_sheet_name').value;
+      var data = {
+        'sheet_id': this.sheet_id,
+        'new_sheet_name': new_sheet_name
+      };
+      var self = this;
+      axios.post('http://localhost:5000/edit_sheet_name', data)
+      .then(function (res) {
         self.populate();
       })
       .catch(function (err) {
