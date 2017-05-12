@@ -1,6 +1,10 @@
 <template>
   <div class="col-lg-12">
     <div class="ibox float-e-margins">
+      <h1>Table: {{ sheet_name }}</h1>
+    </div>
+
+    <div class="ibox float-e-margins">
       <form method="post" id="add_form">
         <input v-for="column in inputs" v-bind:placeholder="column" name="add_records" type="text">
         <button v-on:click="add_data" type="button" class="btn btn-s btn-primary">Add</button>
@@ -50,22 +54,21 @@ export default {
       columns: [],
       inputs: [],
       sheet_name: '',
-      sheet_id: '',
+      sheet_id: parseInt(this.$route.params.id),
     }
   },
   methods: {
-    populate_table: function() {
+    populate: function() {
       var self = this;
-      let id = parseInt(this.$route.params.id);
-      var d = {'id': id};
-      axios.post('http://localhost:5000/get_sheet', d)
+      var d = {'id': this.sheet_id};
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/contents';
+      axios.get(url)
         .then(response => {
-              self.my_list = response.data['rows'];
+              self.my_list = response.data['cells'];
               self.columns = response.data['columns'];
-              self.inputs = response.data['columns'].slice(0);
+              self.inputs = response.data['inputs'];
               self.inputs.pop();
-              self.sheet_name = response.data['sheet_info']['name'];
-              self.sheet_id = response.data['sheet_info']['id'];
+              self.sheet_name = response.data['sheet_name'];
         })
         .catch(function (err) {
           console.log(err.message);
@@ -81,9 +84,10 @@ export default {
         data['values'].push(add_records[i]['value'])
       }
       data['sheet_id'] = document.getElementById('sheet_id').value;
-      axios.post('http://localhost:5000/add_data', data)
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/entry';
+      axios.post(url, data)
       .then(function (res) {
-          self.populate_table();
+          self.populate();
         })
         .catch(function (err) {
           console.log(err.message);
@@ -92,12 +96,11 @@ export default {
     delete_data: function(e) {
       var self = this;
       var form = e.target.form;
-      var data = {}
-      data['sheet_id'] = document.getElementById('sheet_id').value;
-      data['row_id'] = form.elements.namedItem('row_id').value;
-      axios.post('http://localhost:5000/delete_data', data)
+      var row_id = form.elements.namedItem('row_id').value;
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/entry/' + row_id;
+      axios.delete(url)
         .then(function (res) {
-          self.populate_table();
+          self.populate();
         })
         .catch(function (err) {
           console.log(err.message);
@@ -106,17 +109,17 @@ export default {
     edit_data: function(e) {
       var self = this;
       var form = e.target.form;
+      var row_id = form.elements.namedItem('row_id').value;
       var data = {}
-      data['sheet_id'] = document.getElementById('sheet_id').value;
-      data['row_id'] = form.elements.namedItem('row_id').value;
       data['values'] = []
-      var input_nodes = document.getElementsByName(data['row_id']);
+      var input_nodes = document.getElementsByName(row_id);
       for (var i = 0; i < input_nodes.length; i++) {
         data['values'].push(input_nodes[i].value);
       }
-      axios.post('http://localhost:5000/modify_data', data)
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/entry/' + row_id;
+      axios.put(url, data)
         .then(function (res) {
-          self.populate_table()
+          self.populate()
         })
       .catch(function (err) {
         console.log(err.message);
@@ -124,7 +127,7 @@ export default {
     },
   },
   beforeMount() {
-    this.populate_table()
+    this.populate()
   },
 }
 </script>

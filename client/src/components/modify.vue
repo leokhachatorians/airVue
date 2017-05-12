@@ -207,7 +207,8 @@ export default {
   data () {
     return {
       sheet_name: "",
-      sheet_id: 0,
+      sheet_id: parseInt(this.$route.params.id),
+      user_id: 1, // hard coding atm
       schema: [],
       add_well: false,
       edit_well: false,
@@ -224,9 +225,9 @@ export default {
   methods: {
     populate: function() {
       var self = this;
-      this.sheet_id = parseInt(this.$route.params.id);
       var data = {'id': this.sheet_id};
-      axios.post('http://localhost:5000/get_modify_sheet', data)
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id;
+      axios.get(url)
       .then(response => {
         self.sheet_name = response.data['sheet_name'];
         self.schema = response.data['schema'];
@@ -242,7 +243,8 @@ export default {
         'column_id': column_id,
         'sheet_id': this.sheet_id,
       };
-      axios.post('http://localhost:5000/delete_column', data)
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/columns/' + column_id;
+      axios.delete(url, data)
       .then(response => {
         self.populate();
       })
@@ -279,7 +281,8 @@ export default {
         'col_id': col_id,
       };
       var self = this;
-      axios.post('http://localhost:5000/alter_column', data)
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/columns/' + col_id;
+      axios.put(url, data)
       .then(function (res) {
         self.toggle_edit();
         self.populate();
@@ -298,7 +301,8 @@ export default {
         'column_type': col_type
       };
       var self = this;
-      axios.post('http://localhost:5000/add_column', data)
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/columns';
+      axios.post(url, data)
       .then(function (res) {
         self.toggle_add();
         self.populate();
@@ -314,7 +318,8 @@ export default {
         'new_sheet_name': new_sheet_name
       };
       var self = this;
-      axios.post('http://localhost:5000/edit_sheet_name', data)
+      var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/update';
+      axios.post(url, data)
       .then(function (res) {
         self.populate();
       })

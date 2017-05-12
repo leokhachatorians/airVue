@@ -26,7 +26,6 @@ def format_user_data(dtable, data):
 
 def format_user_data_2(dtable, data):
     columns = [c.column_name for c in dtable.columns]
-    columns.append('Commands')
     cells = []
 
     for i, _ in enumerate(data):

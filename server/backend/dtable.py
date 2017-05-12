@@ -40,14 +40,9 @@ class DTable():
         except KeyError:
             return False
 
-    def remove_column(self, name, id_):
-        try:
-            self.info['columns'][name]
-            self.info['modifications']['id'] = id_
-            self.info['action'] = 'remove'
-            return True
-        except KeyError:
-            return False
+    def remove_column(self, id_):
+        self.info['modifications']['id'] = id_
+        self.info['action'] = 'remove'
 
     def change_table_name(self, name):
         self.info['modifications']['name'] = name

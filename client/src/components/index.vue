@@ -2,7 +2,7 @@
   <div class="col-lg-12">
     <div class="ibox float-e-margins">
 
-      <!-- Top Section -->
+    <!-- Top Section -->
       <div class="ibox-title">
         <h5>Your Tables</h5>
       </div>
@@ -13,7 +13,7 @@
           Create New Table
         </button>
       </div>
-      <!-- End Top Section -->
+    <!-- End Top Section -->
 
     <!-- Create Table Well -->
       <div v-show="display_well" class="ibox-content col-lg-12">
@@ -62,7 +62,7 @@
             <tbody>
               <tr v-for="sheet in sheets">
                 <td>
-                  <router-link :to="{name: 'sheet', params: {id: sheet.id}}">{{ sheet.name }}</router-link>
+                  <router-link :to="{name: 'sheet', params: {id: sheet.id, name: sheet.name}}">{{ sheet.name }}</router-link>
                 <td class="form-inline">
                   <button v-on:click="delete_sheet(sheet.id)"
                     class="btn btn-xs btn-danger basic" type="button">Delete</button>
@@ -89,12 +89,14 @@ export default {
     return {
       sheets: [],
       display_well: false,
+      user_id: 1,
     }
   },
   methods: {
     populate: function() {
       var self = this;
-      axios.get('http://localhost:5000/get_sheets')
+      var url = 'http://localhost:5000/api/v1/user/' + this.user_id + '/sheets';
+      axios.get(url)
       .then(response => {
         self.sheets = response.data['sheets'];
       })
@@ -110,7 +112,8 @@ export default {
       var self = this;
       var sheet_name = document.getElementById('sheet_name_input').value;
       var data = {'sheet_name': sheet_name};
-      axios.post('http://localhost:5000/add_sheet', data)
+      var url = 'http://localhost:5000/api/v1/user/' + this.user_id + '/sheets';
+      axios.post(url, data)
       .then(function (res) {
         self.populate()
         self.toggle_well()
@@ -121,7 +124,8 @@ export default {
     },
     delete_sheet: function(id) {
       var self = this;
-      axios.post('http://localhost:5000/delete_sheet', {'id': id})
+      var url = 'http://localhost:5000/api/v1/user/' + this.user_id + '/sheets/' + id;
+      axios.delete(url)
       .then(function (res) {
         self.populate()
       })
@@ -130,7 +134,7 @@ export default {
       });
     }
   },
-  beforeMount() {
+  created() {
     this.populate()
   },
 }
