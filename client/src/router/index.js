@@ -14,12 +14,12 @@ export default new Router({
       component: index,
     },
 		{
-			path: '/sheet/:id',
+			path: '/sheet/:id/:name',
 			name: 'sheet',
 			component: sheet,
 		},
 		{
-			path: '/sheet/modify/:id',
+			path: '/sheet/modify/:id/:name',
 			name: 'modify',
 			component: modify,
 		},

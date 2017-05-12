@@ -206,7 +206,7 @@ export default {
   name: 'modify',
   data () {
     return {
-      sheet_name: "",
+      sheet_name: this.$route.params.name,
       sheet_id: parseInt(this.$route.params.id),
       user_id: 1, // hard coding atm
       schema: [],
@@ -229,7 +229,6 @@ export default {
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id;
       axios.get(url)
       .then(response => {
-        self.sheet_name = response.data['sheet_name'];
         self.schema = response.data['schema'];
       })
       .catch(function (err) {

@@ -53,7 +53,7 @@ export default {
       my_list: [],
       columns: [],
       inputs: [],
-      sheet_name: '',
+      sheet_name: this.$route.params.name,
       sheet_id: parseInt(this.$route.params.id),
     }
   },
@@ -68,7 +68,6 @@ export default {
               self.columns = response.data['columns'];
               self.inputs = response.data['inputs'];
               self.inputs.pop();
-              self.sheet_name = response.data['sheet_name'];
         })
         .catch(function (err) {
           console.log(err.message);

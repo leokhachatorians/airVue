@@ -88,15 +88,12 @@ def update_sheet(sheet_id):
 
 @app.route('/api/v1/sheet/<int:sheet_id>/contents', methods=['GET'])
 def get_contents(sheet_id):
-    sheet = session.query(models.Sheets).filter_by(id=sheet_id).first()
     dtable = schema_store.get_schema('', sheet_id)
     handle = data_engine.create_handle(dtable)
     contents = helpers.format_user_data(dtable, handle.get_rows(dtable))
     inputs, cells = helpers.format_user_data_2(dtable, handle.get_rows(dtable))
     cols = inputs + ['Commands']
-
-    return jsonify(columns=cols, cells=cells, inputs=inputs,
-            sheet_name=sheet.sheet_name)
+    return jsonify(columns=cols, cells=cells, inputs=inputs)
 
 @app.route('/api/v1/sheet/<int:sheet_id>/columns', methods=['POST'])
 def add_column(sheet_id):
