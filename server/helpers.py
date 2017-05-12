@@ -23,3 +23,18 @@ def format_user_data(dtable, data):
             content['rows'][ph]['cells'].append(cell)
         content['rows'][ph]['id'] = data[i][0]
     return content
+
+def format_user_data_2(dtable, data):
+    columns = [c.column_name for c in dtable.columns]
+    columns.append('Commands')
+    cells = []
+
+    for i, _ in enumerate(data):
+        cells.append(
+            {
+                'id': data[i][0],
+                'cells': [cell for cell in data[i][1:]]
+            }
+        )
+    return columns, cells
+

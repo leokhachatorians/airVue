@@ -26,7 +26,7 @@ app.config.from_envvar('AIR_SETTINGS', silent=True)
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-cControl-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
@@ -35,6 +35,77 @@ import models, helpers
 
 schema_store = DTSchemaStoreSQL(session, engine)
 data_engine = DTDataEngineSQL(session, engine, metadata)
+
+@app.route('/api/v1/user', methods=['POST'])
+def create_user():
+    pass
+
+@app.route('/api/v1/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    pass
+
+@app.route('/api/v1/user/<int:user_id>/sheets', methods=['GET'])
+def get_user_sheets(user_id):
+    sheets = []
+    query = session.query(models.Sheets).filter_by(user_id=user_id).all()
+    for sheet in query:
+        sheets.append(
+            {
+                'name': sheet.sheet_name,
+                'id': sheet.id
+            }
+        )
+    return jsonify(sheets=sheets)
+
+@app.route('/api/v1/user/<int:user_id>/sheets', methods=['POST'])
+def create_new_sheet(user_id):
+    pass
+
+@app.route('/api/v1/user/<int:user_id>/sheets/<int:sheet_id>', methods=['PUT'])
+def update_sheet(user_id, sheet_id):
+    pass
+
+@app.route('/api/v1/user/<int:user_id>/sheets/<int:sheet_id>', methods=['delete'])
+def delete_sheet2(user_id, sheet_id):
+    pass
+
+@app.route('/api/v1/sheet/<int:sheet_id>', methods=['GET'])
+def get_schema(sheet_id):
+    dtable = schema_store.get_schema('', sheet_id)
+    return jsonify(schema=dtable.get_schema())
+
+@app.route('/api/v1/sheet/<int:sheet_id>/contents', methods=['GET'])
+def get_contents(sheet_id):
+    sheet = session.query(models.Sheets).filter_by(id=sheet_id).first()
+    dtable = schema_store.get_schema(sheet.sheet_name, sheet_id)
+    handle = data_engine.create_handle(dtable)
+    contents = helpers.format_user_data(dtable, handle.get_rows(dtable))
+    cols, cells = helpers.format_user_data_2(dtable, handle.get_rows(dtable))
+    return jsonify(columns=cols, cells=cells)
+
+@app.route('/api/v1/sheet/<int:sheet_id>/columns', methods=['POST'])
+def add_column2(sheet_id):
+    pass
+
+@app.route('/api/v1/sheet/<int:sheet_id>/columns/<int:column_id>', methods=['PUT'])
+def update_column(sheet_id, column_id):
+    pass
+
+@app.route('/api/v1/sheet/<int:sheet_id>/columns/<int:column_id>', methods=['DELETE'])
+def delete_column2(sheet_id, column_id):
+    pass
+
+@app.route('/api/v1/sheet/<int:sheet_id>/entry', methods=['POST'])
+def add_entry(sheet_id):
+    pass
+
+@app.route('/api/v1/sheet/<int:sheet_id>/entry/<int:row_id>', methods=['PUT'])
+def update_entry(sheet_id, row_id):
+    pass
+
+@app.route('/api/v1/sheet/<int:sheet_id>/entry/<int:row_id>', methods=['DELETE'])
+def delete_entry(sheet_id, row_id):
+    pass
 
 @app.route('/get_sheet', methods=['POST'])
 def get_sheet():
