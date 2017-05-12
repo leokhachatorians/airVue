@@ -94,11 +94,10 @@ export default {
   },
   methods: {
     populate: function() {
-      var self = this;
       var url = 'http://localhost:5000/api/v1/user/' + this.user_id + '/sheets';
       axios.get(url)
       .then(response => {
-        self.sheets = response.data['sheets'];
+        this.sheets = response.data['sheets'];
       })
       .catch(function (err) {
         console.log(err.message);
@@ -109,25 +108,23 @@ export default {
       document.getElementById('sheet_name_input').value = "";
     },
     create_sheet: function() {
-      var self = this;
       var sheet_name = document.getElementById('sheet_name_input').value;
       var data = {'sheet_name': sheet_name};
       var url = 'http://localhost:5000/api/v1/user/' + this.user_id + '/sheets';
       axios.post(url, data)
-      .then(function (res) {
-        self.populate()
-        self.toggle_well()
+      .then(response => {
+        this.populate()
+        this.toggle_well()
       })
       .catch(function (err) {
         console.log(err.message);
       });
     },
     delete_sheet: function(id) {
-      var self = this;
       var url = 'http://localhost:5000/api/v1/user/' + this.user_id + '/sheets/' + id;
       axios.delete(url)
-      .then(function (res) {
-        self.populate()
+      .then(response => {
+        this.populate()
       })
       .catch(function (err) {
         console.log(err.message);

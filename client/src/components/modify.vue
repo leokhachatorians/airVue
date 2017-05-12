@@ -224,19 +224,17 @@ export default {
   },
   methods: {
     populate: function() {
-      var self = this;
       var data = {'id': this.sheet_id};
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id;
       axios.get(url)
       .then(response => {
-        self.schema = response.data['schema'];
+        this.schema = response.data['schema'];
       })
       .catch(function (err) {
         console.log(err.message);
       })
     },
     delete_column: function(column_name, column_id) {
-      var self = this;
       var data = {
         'column_name': column_name,
         'column_id': column_id,
@@ -245,7 +243,7 @@ export default {
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/columns/' + column_id;
       axios.delete(url, data)
       .then(response => {
-        self.populate();
+        this.populate();
       })
       .catch(function (err) {
         console.log(err.message);
@@ -279,12 +277,11 @@ export default {
         'new_type': new_type,
         'col_id': col_id,
       };
-      var self = this;
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/columns/' + col_id;
       axios.put(url, data)
-      .then(function (res) {
-        self.toggle_edit();
-        self.populate();
+      .then(response => {
+        this.toggle_edit();
+        this.populate();
       })
       .catch(function (err) {
         console.log(err.message);
@@ -299,12 +296,11 @@ export default {
         'column_name': col_name,
         'column_type': col_type
       };
-      var self = this;
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/columns';
       axios.post(url, data)
-      .then(function (res) {
-        self.toggle_add();
-        self.populate();
+      .then(response => {
+        this.toggle_add();
+        this.populate();
       })
       .catch(function (err) {
         console.log(err.message);
@@ -316,11 +312,10 @@ export default {
         'sheet_id': this.sheet_id,
         'new_sheet_name': new_sheet_name
       };
-      var self = this;
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/update';
       axios.post(url, data)
-      .then(function (res) {
-        self.populate();
+      .then(response => {
+        this.populate();
       })
       .catch(function (err) {
         console.log(err.message);
