@@ -24,123 +24,127 @@ app.config.update(dict(
 
 app.config.from_envvar('AIR_SETTINGS', silent=True)
 
-import forms, models, helpers
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
+
+import models, helpers
 
 schema_store = DTSchemaStoreSQL(session, engine)
 data_engine = DTDataEngineSQL(session, engine, metadata)
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    # hard coding user id for the time being
-    sheets = session.query(models.Sheets).filter_by(user_id=1).all()
-    new_sheet_form = forms.NewSheetForm(request.form)
-    delete_form = forms.DeleteTableForm(request.form)
+@app.route('/api/v1/user', methods=['POST'])
+def create_user():
+    pass
 
-    if request.method == 'POST':
-        if new_sheet_form.submit_new_sheet.data and new_sheet_form.validate():
-            dtable = schema_store.get_schema(new_sheet_form.sheet_name.data)
-            dtable.info['action'] = 'generate'
-            schema_store.set_schema(dtable)
-            data_engine.set_schema(dtable)
-            return redirect(url_for('index'))
-        elif delete_form.submit_delete.data and delete_form.validate():
-            sheet_name = delete_form.delete_table_name.data
-            sheet_id = delete_form.delete_table_id.data
-            dtable = schema_store.get_schema(sheet_name, sheet_id)
-            dtable.info['action'] = 'drop'
-            schema_store.set_schema(dtable)
-            data_engine.set_schema(dtable)
-            return redirect(url_for('index'))
-    return render_template("index.html", sheets=sheets,
-            new_sheet_form=new_sheet_form, delete_form=delete_form)
+@app.route('/api/v1/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    pass
 
-@app.route('/view_sheet/<sheet_name>', methods=['GET', 'POST'])
-def view_sheet(sheet_name):
-    """Displays a users sheet
+@app.route('/api/v1/user/<int:user_id>/sheets', methods=['GET'])
+def get_user_sheets(user_id):
+    sheets = []
+    query = session.query(models.Sheets).filter_by(user_id=user_id).all()
+    for sheet in query:
+        sheets.append(
+            {
+                'name': sheet.sheet_name,
+                'id': sheet.id
+            }
+        )
+    return jsonify(sheets=sheets)
 
-    Relies on creating a generated_table object which contains
-    the same name as the user's table we want to access. That generated
-    table is then the vehicle we use to actually insert and retrieve
-    data.
-    """
-    sheet = session.query(models.Sheets).filter_by(sheet_name=sheet_name).first()
-    schema = session.query(models.Sheets_Schema).filter(models.Sheets_Schema.sheet_id==sheet.id).all()
+@app.route('/api/v1/user/<int:user_id>/sheets', methods=['POST'])
+def create_new_sheet(user_id):
+    dtable = schema_store.get_schema(table_name=request.json['sheet_name'])
+    dtable.info['action'] = 'generate'
+    schema_store.set_schema(dtable)
+    data_engine.set_schema(dtable)
+    return jsonify(status=200)
 
-    add_form = forms.AddDataForm(request.form)
-    delete_form = forms.DeleteDataForm(request.form)
-    edit_form = forms.EditDataForm(request.form)
+@app.route('/api/v1/user/<int:user_id>/sheets/<int:sheet_id>', methods=['DELETE'])
+def delete_sheet(user_id, sheet_id):
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    dtable.info['action'] = 'drop'
+    schema_store.set_schema(dtable)
+    data_engine.set_schema(dtable)
+    return jsonify(status=200)
 
-    dtable = schema_store.get_schema(sheet.sheet_name, sheet.id)
+@app.route('/api/v1/sheet/<int:sheet_id>', methods=['GET'])
+def get_schema(sheet_id):
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    return jsonify(schema=dtable.get_schema())
+
+@app.route('/api/v1/sheet/<int:sheet_id>/update', methods=['POST'])
+def update_sheet(sheet_id):
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    dtable.change_table_name(request.json['new_sheet_name'])
+    schema_store.set_schema(dtable)
+    return jsonify(status=200)
+
+@app.route('/api/v1/sheet/<int:sheet_id>/contents', methods=['GET'])
+def get_contents(sheet_id):
+    dtable = schema_store.get_schema(table_id=sheet_id)
     handle = data_engine.create_handle(dtable)
+    contents = helpers.format_user_data(dtable, handle.get_rows(dtable))
+    inputs, cells = helpers.format_user_data_2(dtable, handle.get_rows(dtable))
+    cols = inputs + ['Commands']
+    return jsonify(columns=cols, cells=cells, inputs=inputs)
 
-    if request.method == 'POST':
-        if add_form.submit_add_data.data and add_form.validate():
-            data = request.form.getlist("add_records")
-            data = {'col_{}'.format(schema[i].id): data[i] for i, _ in enumerate(data)}
-            handle.add_row(dtable, data)
-        elif delete_form.submit_delete_row.data and delete_form.validate():
-            handle.delete_row(dtable, delete_form.delete_row_id.data)
-        elif edit_form.submit_edit_row.data and edit_form.validate():
-            handle.update_row(dtable, edit_form.edit_row_id.data, request.form.getlist('updated_cells'))
-        return redirect(url_for('view_sheet', sheet_name=sheet_name))
+@app.route('/api/v1/sheet/<int:sheet_id>/columns', methods=['POST'])
+def add_column(sheet_id):
+    column_name = request.json['column_name']
+    column_type = request.json['column_type']
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    dtable.add_column(column_name, column_type)
+    schema_store.set_schema(dtable)
+    data_engine.set_schema(dtable)
+    return jsonify(status=200)
 
-    # Make sure to close the session after querying the generated table,
-    # otherwise the session keeps a lock on table for some reason.
-    contents = handle.get_rows(dtable)
-    session.close()
+@app.route('/api/v1/sheet/<int:sheet_id>/columns/<int:column_id>', methods=['PUT'])
+def update_column(sheet_id, column_id):
+    new_name = request.json['new_name']
+    old_name = request.json['old_name']
+    new_type = request.json['new_type']
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    dtable.alter_column(old_name, new_name, new_type, column_id)
+    schema_store.set_schema(dtable)
+    return jsonify(status=200)
 
-    return render_template('view_sheet.html',
-            schema=dtable.columns, sheet_name=sheet_name,
-            contents=contents, add_form=add_form,
-            delete_form=delete_form, edit_form=edit_form)
+@app.route('/api/v1/sheet/<int:sheet_id>/columns/<int:column_id>', methods=['DELETE'])
+def delete_column(sheet_id, column_id):
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    dtable.remove_column(column_id)
+    schema_store.set_schema(dtable)
+    data_engine.set_schema(dtable)
+    return jsonify(status=200)
 
-@app.route('/modify_sheet/<sheet_name>', methods=['GET', 'POST'])
-def modify_sheet(sheet_name):
-    """Allows the user to modify the open "Sheet".
+@app.route('/api/v1/sheet/<int:sheet_id>/entry', methods=['POST'])
+def add_entry(sheet_id):
+    values = request.json['values']
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    handle = data_engine.create_handle(dtable)
+    data = {'col_{}'.format(dtable.columns[i].column_id): values[i] for i, _ in enumerate(values)}
+    handle.add_row(dtable, data)
+    return jsonify(status=200)
 
-    Two seperate forms exist, one for adding columns and the other
-    for deletion. As such, there exists two blocks which handle
-    each respective action.
-    """
-    sheet = session.query(models.Sheets).filter_by(sheet_name=sheet_name).first()
-    schema = session.query(models.Sheets_Schema).filter(models.Sheets_Schema.sheet_id==sheet.id)
+@app.route('/api/v1/sheet/<int:sheet_id>/entry/<int:row_id>', methods=['PUT'])
+def update_entry(sheet_id, row_id):
+    values = request.json['values']
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    handle = data_engine.create_handle(dtable)
+    handle.update_row(dtable, row_id, values)
+    return jsonify(status=200)
 
-    add_form = forms.AddColumnForm(request.form)
-    delete_form = forms.DeleteColumnForm(request.form)
-    edit_form = forms.EditColumnForm(request.form)
-    edit_sheet_form = forms.EditSheetForm(request.form)
-
-    dtable = schema_store.get_schema(sheet.sheet_name, sheet.id)
-
-    if request.method == 'POST':
-        if add_form.submit_add_column.data and add_form.validate():
-            if dtable.add_column(add_form):
-                schema_store.set_schema(dtable, schema, sheet)
-                data_engine.set_schema(dtable)
-            else:
-                print('duplicate column name')
-        elif delete_form.submit_delete.data and delete_form.validate():
-            if dtable.remove_column(delete_form):
-                schema_store.set_schema(dtable, schema, sheet)
-                data_engine.set_schema(dtable)
-            else:
-                print('invalid col id')
-        elif edit_form.submit_edit_column.data and edit_form.validate():
-            if dtable.alter_column(edit_form):
-                schema_store.set_schema(dtable, schema, sheet)
-                data_engine.set_schema(dtable)
-            else:
-                print('invalid')
-        elif edit_sheet_form.submit_edit_sheet.data and edit_sheet_form.validate():
-            if dtable.change_tablename(edit_sheet_form):
-                schema_store.set_schema(dtable)
-                new_name = dtable.info['modifications']['name']
-                return redirect(url_for('modify_sheet', sheet_name=new_name))
-        return redirect(url_for('modify_sheet', sheet_name=sheet_name))
-    return render_template('modify_sheet.html',
-            schema=dtable.columns, add_form=add_form,
-            delete_form=delete_form, edit_form=edit_form,
-            sheet=sheet, edit_sheet_form=edit_sheet_form)
+@app.route('/api/v1/sheet/<int:sheet_id>/entry/<int:row_id>', methods=['DELETE'])
+def delete_entry(sheet_id, row_id):
+    dtable = schema_store.get_schema(table_id=sheet_id)
+    handle = data_engine.create_handle(dtable)
+    handle.delete_row(dtable, row_id)
+    return jsonify(status=200)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

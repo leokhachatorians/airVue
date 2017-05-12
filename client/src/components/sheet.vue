@@ -5,11 +5,9 @@
     </div>
 
     <div class="ibox float-e-margins">
-      <form method="post" id="add_form">
-        <input v-for="column in inputs" v-bind:placeholder="column" name="add_records" type="text">
-        <button v-on:click="add_data" type="button" class="btn btn-s btn-primary">Add</button>
-        <input type="hidden" :value="sheet_id" id="sheet_id">
-      </form>
+      <input v-for="column in inputs" v-bind:placeholder="column" name="add_records" type="text">
+      <button v-on:click="add_data" type="button" class="btn btn-s btn-primary">Add</button>
+      <input type="hidden" :value="sheet_id" id="sheet_id">
 
       <div class="ibox-content">
         <div class="table-responsive">
@@ -66,7 +64,6 @@ export default {
         this.my_list = response.data['cells'];
         this.columns = response.data['columns'];
         this.inputs = response.data['inputs'];
-        this.inputs.pop();
       })
       .catch(function (err) {
         console.log(err.message);
@@ -75,7 +72,6 @@ export default {
     add_data: function() {
       var add_records = document.getElementsByName('add_records');
       var data = {}
-
       data['values'] = []
       for (var i = 0; i < add_records.length; i++) {
         data['values'].push(add_records[i]['value'])

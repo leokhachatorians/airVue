@@ -7,164 +7,166 @@
       </h3>
     </div>
     <div class="ibox float-e-margins">
-      <div class="ibox-title">
-        <h5>Column List</h5>
-        <div class="ibox-tools">
-          <a class="collapse-link">
-            <i class="fa fa-chevron-up"></i>
-          </a>
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="fa fa-wranch"></i>
-          </a>
-          <a class="close-link">
-            <i class="fa fa-times"></i>
-          </a>
+      <!-- Title -->
+        <div class="ibox-title">
+          <h5>Column List</h5>
+          <div class="ibox-tools">
+            <a class="collapse-link">
+              <i class="fa fa-chevron-up"></i>
+            </a>
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-wranch"></i>
+            </a>
+            <a class="close-link">
+              <i class="fa fa-times"></i>
+            </a>
+          </div>
         </div>
-      </div>
+       <!-- End Title -->
 
-    <!-- Add Column Button -->
-      <div class="ibox-content">
-        <div class="form-inline">
-          <button v-on:click="toggle_add" type="button" class="btn btn-w-m btn-success">
-            Add Column
-          </button>
+      <!-- Add Column Button -->
+        <div class="ibox-content">
+          <div class="form-inline">
+            <button v-on:click="toggle_add" type="button" class="btn btn-w-m btn-success">
+              Add Column
+            </button>
+          </div>
         </div>
-      </div>
-    <!-- End Add Column Button -->
+      <!-- End Add Column Button -->
 
-    <!-- Add Column Well -->
-      <div v-show="add_well" class="ibox-content col-lg-12">
-        <div class="well col-lg-3">
-          <form role="form" class="form-inline">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th colspan="3" style="text-align: center;"><h3>Add Column</h3></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Name</label></td>
-                  <td><input type="text" id="add_name" class="form-control"></td>
-                </tr>
-                <tr>
-                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
-                  <td>
-                    <select id="options_add" class="form-control">
-                      <option v-for="type in types" v-bind:value="type[0]">
-                        {{ type[1] }}
-                      </option>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td class="form-inline">
-                    <button v-on:click="add_column"
-                      type="button" class="btn btn-s btn-primary">
-                      Create
-                    </button>
-                    <button v-on:click="toggle_add"
-                      type="button" class="btn btn-s btn-default">
-                      Cancel
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </form>
-        </div>
-      </div>
-    <!-- End of Add Column Well-->
-
-    <!-- Edit Column Well -->
-      <div v-show="edit_well" id="edit_column_well" class="ibox-content col-lg-12">
-        <div class="well col-lg-6">
-          <form role="form" class="form-inline">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th colspan="3" style="text-align: center;"><h3 id="edit_column_header">Edit Column</h3></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Current Column Name</label></td>
-                  <td><input type="text" id="old_name" class="form-control" disabled></td>
-                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">New Column Name</label></td>
-                  <td><input type="text" id="new_name" class="form-control"></td>
-                </tr>
-                <tr>
-                  <td style="vertical-align: middle;"><label class="col-lg-3 control-label">Old Type</label></td>
-                  <td><input type="text" id="old_type" class="form-control" disabled></td>
-                  <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
-                  <td>
-                    <select id="options_edit" class="form-control">
-                      <option v-for="type in types" v-bind:value="type[0]">
-                        {{ type[1] }}
-                      </option>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td class="form-inline">
-                      <button v-on:click="edit_column"
+      <!-- Add Column Well -->
+        <div v-show="add_well" class="ibox-content col-lg-12">
+          <div class="well col-lg-3">
+            <form role="form" class="form-inline">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th colspan="3" style="text-align: center;"><h3>Add Column</h3></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Name</label></td>
+                    <td><input type="text" id="add_name" class="form-control"></td>
+                  </tr>
+                  <tr>
+                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
+                    <td>
+                      <select id="options_add" class="form-control">
+                        <option v-for="type in types" v-bind:value="type[0]">
+                          {{ type[1] }}
+                        </option>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td class="form-inline">
+                      <button v-on:click="add_column"
                         type="button" class="btn btn-s btn-primary">
-                        Alter
+                        Create
                       </button>
-                      <input type="hidden" id="edit_col_id" value="">
-                      <button v-on:click="toggle_edit" 
-                        id="cancel_edit_column_button" type="button"
-                        class="btn btn-s btn-default">
+                      <button v-on:click="toggle_add"
+                        type="button" class="btn btn-s btn-default">
                         Cancel
                       </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </form>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </div>
         </div>
-      </div>
-    <!-- End Edit Column Well -->
+      <!-- End of Add Column Well-->
 
-    <!-- Table of Column Info -->
-      <div class="ibox-content">
-        <div class="table-responsive">
-          <div role="status" aria-live="polite" style="padding-bottom: 8px;">Showing 1 to 14 of 14 entries</div>
-            <table class="table table-striped table-bordered table-hover dataTables-example" >
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Column Name</th>
-                  <th>Column Type</th>
-                  <th>Commands</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="column in schema">
-                  <td>{{ column.num }}</td>
-                  <td>{{ column.name }}</td>
-                  <td>{{ column.type }}</td>
-                  <td>
-                    <button
-                    v-on:click="toggle_edit(column.name, column.id, column.type)"
-                      id="edit_column_btn"
-                      type="button" class="btn btn-xs btn-success basic">
-                      Edit</button>
-                    <button v-on:click="delete_column(column.name, column.id)"
-                      type="button" class="btn btn-xs btn-danger basic">
-                      Delete
-                    </button>
-                    <input type="hidden" id="clicked_column_name_i.column_name" name="to_delete" value="i.column_id">
-                    <input type="hidden" id="clicked_column_type_loop.index0"  value="i.column_type">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-        </div> 
-      </div>
-    <!-- End of Table of Column Info -->
+      <!-- Edit Column Well -->
+        <div v-show="edit_well" id="edit_column_well" class="ibox-content col-lg-12">
+          <div class="well col-lg-6">
+            <form role="form" class="form-inline">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th colspan="3" style="text-align: center;"><h3 id="edit_column_header">Edit Column</h3></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Current Column Name</label></td>
+                    <td><input type="text" id="old_name" class="form-control" disabled></td>
+                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">New Column Name</label></td>
+                    <td><input type="text" id="new_name" class="form-control"></td>
+                  </tr>
+                  <tr>
+                    <td style="vertical-align: middle;"><label class="col-lg-3 control-label">Old Type</label></td>
+                    <td><input type="text" id="old_type" class="form-control" disabled></td>
+                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
+                    <td>
+                      <select id="options_edit" class="form-control">
+                        <option v-for="type in types" v-bind:value="type[0]">
+                          {{ type[1] }}
+                        </option>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td class="form-inline">
+                        <button v-on:click="edit_column"
+                          type="button" class="btn btn-s btn-primary">
+                          Alter
+                        </button>
+                        <input type="hidden" id="edit_col_id" value="">
+                        <button v-on:click="toggle_edit" 
+                          id="cancel_edit_column_button" type="button"
+                          class="btn btn-s btn-default">
+                          Cancel
+                        </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </div>
+        </div>
+      <!-- End Edit Column Well -->
+
+      <!-- Table of Column Info -->
+        <div class="ibox-content">
+          <div class="table-responsive">
+            <div role="status" aria-live="polite" style="padding-bottom: 8px;">Showing 1 to 14 of 14 entries</div>
+              <table class="table table-striped table-bordered table-hover dataTables-example" >
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Column Name</th>
+                    <th>Column Type</th>
+                    <th>Commands</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="column in schema">
+                    <td>{{ column.num }}</td>
+                    <td>{{ column.name }}</td>
+                    <td>{{ column.type }}</td>
+                    <td>
+                      <button
+                      v-on:click="toggle_edit(column.name, column.id, column.type)"
+                        id="edit_column_btn"
+                        type="button" class="btn btn-xs btn-success basic">
+                        Edit</button>
+                      <button v-on:click="delete_column(column.name, column.id)"
+                        type="button" class="btn btn-xs btn-danger basic">
+                        Delete
+                      </button>
+                      <input type="hidden" id="clicked_column_name_i.column_name" name="to_delete" value="i.column_id">
+                      <input type="hidden" id="clicked_column_type_loop.index0"  value="i.column_type">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div> 
+        </div>
+      <!-- End of Table of Column Info -->
     </div>
 
   <!-- Change Tablename Modal -->
@@ -224,7 +226,7 @@ export default {
   },
   methods: {
     populate: function() {
-      var data = {'id': this.sheet_id};
+      this.sheet_name = this.$route.params.name;
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id;
       axios.get(url)
       .then(response => {
@@ -315,6 +317,7 @@ export default {
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/update';
       axios.post(url, data)
       .then(response => {
+        this.$router.push('/sheet/modify/' + this.sheet_id + '/' + new_sheet_name);
         this.populate();
       })
       .catch(function (err) {

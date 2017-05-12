@@ -27,7 +27,7 @@ class DTSchemaStoreSQL(DTSchemaStore):
     def get_tables(self):
         pass
 
-    def get_schema(self, table_name, table_id=None):
+    def get_schema(self, table_name=None, table_id=None):
         if table_id == None:
             return DTable(table_name)
         dt_columns = []
