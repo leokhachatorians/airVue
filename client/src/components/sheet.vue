@@ -80,6 +80,7 @@ export default {
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/entry';
       axios.post(url, data)
       .then(response => {
+        this.clear_inputs();
         this.populate();
       })
       .catch(function (err) {
@@ -116,6 +117,12 @@ export default {
         console.log(err.message);
       });
     },
+    clear_inputs: function(e) {
+      var inputs = document.getElementsByName('add_records');
+      for (var i = 0; i < inputs.length; i++) {
+        inputs[i].value = "";
+      }
+    }
   },
   beforeMount() {
     this.populate()
