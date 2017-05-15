@@ -137,15 +137,13 @@
               <table class="table table-striped table-bordered table-hover dataTables-example" >
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>Column Name</th>
-                    <th>Column Type</th>
-                    <th>Commands</th>
+                    <th class="column">Column Name</th>
+                    <th class="column">Column Type</th>
+                    <th class="column">Commands</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="column in schema">
-                    <td>{{ column.num }}</td>
                     <td>{{ column.name }}</td>
                     <td>{{ column.type }}</td>
                     <td>
@@ -334,5 +332,9 @@ export default {
 <style>
 .basic {
   margin-bottom: 0;
+}
+
+.column {
+  text-align: center;
 }
 </style>

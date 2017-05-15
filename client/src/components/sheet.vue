@@ -4,7 +4,7 @@
       <h1>Table: {{ sheet_name }}</h1>
     </div>
 
-    <div class="ibox float-e-margins">
+    <div v-if="allow_data" class="ibox float-e-margins">
       <input v-for="column in inputs" v-bind:placeholder="column" name="add_records" type="text">
       <button v-on:click="add_data" type="button" class="btn btn-s btn-primary">Add</button>
       <input type="hidden" :value="sheet_id" id="sheet_id">
@@ -13,10 +13,10 @@
         <div class="table-responsive">
           <div role="status" aria-live="polite" style="padding-bottom: 8px;">Showing 1 to 14 of 14 Entries</div>
           <table class="table table-striped table-bordered table-hover dataTables-example">
-            <thead>
+            <thead> 
               <tr>
                 <th width="5" style="border-right-style: hidden;"></th>
-                <th v-for="column in columns">{{ column }}</th>
+                <th v-for="column in columns" class="column">{{ column }}</th>
               </tr>
             </thead>
             <tbody>
@@ -40,6 +40,11 @@
         </div>
       </div>
     </div>
+    <div v-else>
+      <h1>You have no columns! Click 
+        <router-link :to="{name: 'modify', params: {id: sheet_id, name: sheet_name}}">here</router-link>
+        to create some</h1>
+    </div>
   </div>
 </template>
 
@@ -51,6 +56,7 @@ export default {
       my_list: [],
       columns: [],
       inputs: [],
+      allow_data: false,
       sheet_name: this.$route.params.name,
       sheet_id: parseInt(this.$route.params.id),
     }
@@ -64,6 +70,7 @@ export default {
         this.my_list = response.data['cells'];
         this.columns = response.data['columns'];
         this.inputs = response.data['inputs'];
+        this.allow_data = this.inputs.length > 0 ? true : false;
       })
       .catch(function (err) {
         console.log(err.message);
@@ -129,3 +136,9 @@ export default {
   },
 }
 </script>
+
+<style>
+.column {
+  text-align: center;
+}
+</style>
