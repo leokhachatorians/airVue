@@ -2,8 +2,11 @@
   <div class="col-lg-12">
     <div class="ibox float-e-margins">
       <h1>Table: {{ sheet_name }}</h1> 
-      <h3><button type="button" class="btn btn-xs btn-primary" style="margin-bottom: 0;"
-              data-toggle="modal" data-target="#change_table_name_modal">Change Table Name</button>
+      <h3>
+        <button type="button" class="btn btn-small btn-primary"
+          data-toggle="modal" data-target="#change_table_name_modal">
+            Change Table Name
+        </button>
       </h3>
     </div>
     <div class="ibox float-e-margins">
@@ -26,7 +29,7 @@
 
       <!-- Add Column Button -->
         <div class="ibox-content">
-          <div class="form-inline">
+          <div>
             <button v-on:click="toggle_add" type="button" class="btn btn-w-m btn-success">
               Add Column
             </button>
@@ -37,11 +40,11 @@
       <!-- Add Column Well -->
         <div v-show="add_well" class="ibox-content col-lg-12">
           <div class="well col-lg-3">
-            <form role="form" class="form-inline">
+            <form role="form">
               <table class="table">
                 <thead>
                   <tr>
-                    <th colspan="3" style="text-align: center;"><h3>Add Column</h3></th>
+                    <th colspan="3" class="center"><h3>Add Column</h3></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -86,20 +89,32 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th colspan="3" style="text-align: center;"><h3 id="edit_column_header">Edit Column</h3></th>
+                    <th colspan="3" class="center">
+                      <h3 id="edit_column_header">Edit Column</h3>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Current Column Name</label></td>
-                    <td><input type="text" id="old_name" class="form-control" disabled></td>
-                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">New Column Name</label></td>
+                    <td style="vertical-align: middle;">
+                      <label class="col-lg-2 control-label">Current Column Name</label>
+                    </td>
+                    <td>
+                      <input type="text" id="old_name" class="form-control" disabled>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <label class="col-lg-2 control-label">New Column Name</label>
+                    </td>
                     <td><input type="text" id="new_name" class="form-control"></td>
                   </tr>
                   <tr>
-                    <td style="vertical-align: middle;"><label class="col-lg-3 control-label">Old Type</label></td>
+                    <td style="vertical-align: middle;">
+                      <label class="col-lg-3 control-label">Old Type</label>
+                    </td>
                     <td><input type="text" id="old_type" class="form-control" disabled></td>
-                    <td style="vertical-align: middle;"><label class="col-lg-2 control-label">Type</label></td>
+                    <td style="vertical-align: middle;">
+                      <label class="col-lg-2 control-label">Type</label>
+                    </td>
                     <td>
                       <select id="options_edit" class="form-control">
                         <option v-for="type in types" v-bind:value="type[0]">
@@ -111,16 +126,16 @@
                   <tr>
                     <td></td>
                     <td class="form-inline">
-                        <button v-on:click="edit_column"
-                          type="button" class="btn btn-s btn-primary">
-                          Alter
-                        </button>
-                        <input type="hidden" id="edit_col_id" value="">
-                        <button v-on:click="toggle_edit" 
-                          id="cancel_edit_column_button" type="button"
-                          class="btn btn-s btn-default">
-                          Cancel
-                        </button>
+                      <button v-on:click="edit_column"
+                        type="button" class="btn btn-s btn-primary">
+                        Alter
+                      </button>
+                      <input type="hidden" id="edit_col_id" value="">
+                      <button v-on:click="toggle_edit" 
+                        id="cancel_edit_column_button" type="button"
+                        class="btn btn-s btn-default">
+                        Cancel
+                      </button>
                     </td>
                   </tr>
                 </tbody>
@@ -133,13 +148,12 @@
       <!-- Table of Column Info -->
         <div class="ibox-content">
           <div class="table-responsive">
-            <div role="status" aria-live="polite" style="padding-bottom: 8px;">Showing 1 to 14 of 14 entries</div>
               <table class="table table-striped table-bordered table-hover dataTables-example" >
                 <thead>
                   <tr>
-                    <th class="column">Column Name</th>
-                    <th class="column">Column Type</th>
-                    <th class="column">Commands</th>
+                    <th class="center">Column Name</th>
+                    <th class="center">Column Type</th>
+                    <th class="center">Commands</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -334,7 +348,7 @@ export default {
   margin-bottom: 0;
 }
 
-.column {
+.center {
   text-align: center;
 }
 </style>

@@ -32,8 +32,9 @@
                   </tr>
                   <tr>
                     <td></td>
-                    <td class="form-inline">
-                      <button v-on:click="create_sheet" type="button" class="btn btn-s btn-primary basic">Create</button>
+                    <td>
+                      <button v-on:click="create_sheet" type="button"
+                        class="btn btn-s btn-primary basic">Create</button>
                       <button v-on:click="toggle_well" 
                         type="button" class="btn btn-s btn-default left">Cancel</button>
                     </td>
@@ -48,9 +49,6 @@
     <!-- Contents -->
       <div class="ibox-content">
         <div class="table-responsive">
-          <div role="status" aria-live="polite" style="padding-bottom: 8px;">
-            Showing 1 to 14 of 14 entries
-          </div>
         <!-- View Table List Section -->
           <table class="table table-striped table-bordered table-hover dataTables-Example">
             <thead>
@@ -145,5 +143,12 @@ export default {
 .left {
   margin-bottom: 0;
   margin-left: 10px;
+}
+
+.center-block {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
 }
 </style>

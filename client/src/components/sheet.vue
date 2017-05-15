@@ -7,11 +7,9 @@
     <div v-if="allow_data" class="ibox float-e-margins">
       <input v-for="column in inputs" v-bind:placeholder="column" name="add_records" type="text">
       <button v-on:click="add_data" type="button" class="btn btn-s btn-primary">Add</button>
-      <input type="hidden" :value="sheet_id" id="sheet_id">
 
       <div class="ibox-content">
         <div class="table-responsive">
-          <div role="status" aria-live="polite" style="padding-bottom: 8px;">Showing 1 to 14 of 14 Entries</div>
           <table class="table table-striped table-bordered table-hover dataTables-example">
             <thead> 
               <tr>
@@ -28,10 +26,10 @@
                 <td>
                   <form method="post">
                     <input type="hidden" v-bind:value="key.id" id="row_id">
-                    <button v-on:click="delete_data" type="button" class="btn btn-xs btn-danger"
-                            style="margin-bottom: 0;">X</button>
-                    <button v-on:click="edit_data" type="button" class="btn btn-xs btn-success"
-                            style="margin-bottom: 0;">Save</button>
+                    <button v-on:click="delete_data" type="button" 
+                      class="btn btn-xs btn-danger">X</button>
+                    <button v-on:click="edit_data" type="button" 
+                      class="btn btn-xs btn-success">Save</button>
                   </form>
                 </td>
               </tr>
@@ -83,7 +81,6 @@ export default {
       for (var i = 0; i < add_records.length; i++) {
         data['values'].push(add_records[i]['value'])
       }
-      data['sheet_id'] = document.getElementById('sheet_id').value;
       var url = 'http://localhost:5000/api/v1/sheet/' + this.sheet_id + '/entry';
       axios.post(url, data)
       .then(response => {
